@@ -1,0 +1,10 @@
+{
+  "name": "Remix CraftBridge AI",
+  "description": "Accessible multilingual global craft marketplace empowering disabled, non-English speaking, and low digital-literacy artisans with AI listing, voice navigation, smart pricing, and digital craft authentication.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
