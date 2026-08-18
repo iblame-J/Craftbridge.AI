@@ -188,19 +188,19 @@ export const LoginPage: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 font-bold text-xs text-stone-700 transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Home</span>
+            <span>{t.backToHome || 'Back to Home'}</span>
           </button>
 
           <button
             onClick={() => {
               isVoiceSpeaking 
                 ? stopAudio() 
-                : speak('Welcome to CraftBridge AI Login. Tap 1-Click Demo Login to sign in instantly, or enter your mobile phone number.');
+                : speak(t.signInSubtitle);
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs transition"
           >
             {isVoiceSpeaking ? <VolumeX className="w-3.5 h-3.5 text-rose-600" /> : <Volume2 className="w-3.5 h-3.5" />}
-            <span>{isVoiceSpeaking ? t.stopListening : 'Read Login Help'}</span>
+            <span>{isVoiceSpeaking ? t.stopListening : (t.readLoginHelp || 'Read Login Help')}</span>
           </button>
         </div>
 
@@ -210,10 +210,10 @@ export const LoginPage: React.FC = () => {
             CB
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-            Welcome to CraftBridge
+            {t.signInTitle || 'Welcome to CraftBridge'}
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 mt-1 font-normal">
-            Sign in to access your artisan dashboard or explore handmade crafts worldwide.
+            {t.signInSubtitle || 'Sign in to access your artisan dashboard or explore handmade crafts worldwide.'}
           </p>
         </div>
 
@@ -228,7 +228,7 @@ export const LoginPage: React.FC = () => {
             }`}
           >
             <User className="w-4 h-4 text-stone-600" />
-            <span>Artisan / Seller</span>
+            <span>{t.artisanSeller || 'Artisan / Seller'}</span>
           </button>
 
           <button
@@ -240,7 +240,7 @@ export const LoginPage: React.FC = () => {
             }`}
           >
             <ShoppingBag className="w-4 h-4 text-stone-600" />
-            <span>Buyer / Collector</span>
+            <span>{t.buyerCollector || 'Buyer / Collector'}</span>
           </button>
         </div>
 
@@ -249,7 +249,7 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center justify-between mb-2.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-800" />
-              <span>Instant Demo Profiles</span>
+              <span>{t.instantDemoProfiles || 'Instant Demo Profiles'}</span>
             </span>
           </div>
 
@@ -278,7 +278,7 @@ export const LoginPage: React.FC = () => {
 
                 <div className="flex items-center gap-1.5">
                   <span className="px-2.5 py-1 rounded-lg bg-stone-200 group-hover:bg-stone-900 group-hover:text-white text-stone-800 font-bold text-xs transition">
-                    Sign In →
+                    {t.signIn || 'Sign In'} →
                   </span>
                 </div>
               </button>
@@ -289,7 +289,9 @@ export const LoginPage: React.FC = () => {
         {/* DIVIDER */}
         <div className="relative flex py-3 items-center mb-5">
           <div className="flex-grow border-t border-stone-200"></div>
-          <span className="flex-shrink mx-3 text-[10px] uppercase font-bold tracking-wider text-stone-400">Or Login with Mobile</span>
+          <span className="flex-shrink mx-3 text-[10px] uppercase font-bold tracking-wider text-stone-400">
+            {t.orLoginWithMobile || 'Or Login with Mobile'}
+          </span>
           <div className="flex-grow border-t border-stone-200"></div>
         </div>
 
@@ -298,7 +300,7 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleSendOtp} className="space-y-3.5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
-                Mobile Number:
+                {t.mobileNumber || 'Mobile Number:'}
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -307,7 +309,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="+91 98450 12345 or speak"
+                  placeholder="+91 98450 12345"
                   className="w-full pl-10 pr-12 py-2.5 rounded-xl border border-stone-300 bg-white font-medium text-xs sm:text-sm outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
                 />
                 <button
@@ -328,18 +330,18 @@ export const LoginPage: React.FC = () => {
               className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm transition shadow-xs flex items-center justify-center gap-1.5"
             >
               <KeyRound className="w-4 h-4" />
-              <span>Send Verification Code</span>
+              <span>{t.sendVerificationCode || 'Send Verification Code'}</span>
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp} className="space-y-3.5">
             <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium">
-              Verification PIN sent to {phoneNumber}. Code: <strong className="font-bold">4829</strong>
+              PIN sent to {phoneNumber}. Code: <strong className="font-bold">4829</strong>
             </div>
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
-                Enter 4-Digit Verification Code:
+                {t.enterOtp || 'Enter 4-Digit Verification Code:'}
               </label>
               <input
                 type="text"
@@ -357,13 +359,13 @@ export const LoginPage: React.FC = () => {
                 onClick={() => setOtpSent(false)}
                 className="py-2.5 px-3.5 rounded-xl border border-stone-300 font-bold text-xs text-stone-700 hover:bg-stone-100"
               >
-                Change
+                {t.changePhone || 'Change'}
               </button>
               <button
                 type="submit"
                 className="flex-1 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition shadow-xs"
               >
-                Verify & Enter →
+                {t.verifyAndEnter || 'Verify & Enter →'}
               </button>
             </div>
           </form>
@@ -378,7 +380,7 @@ export const LoginPage: React.FC = () => {
             }}
             className="text-xs font-medium text-stone-500 hover:text-stone-900 underline transition"
           >
-            Continue as Guest Buyer without signing in →
+            {t.continueAsGuest || 'Continue as Guest Buyer without signing in →'}
           </button>
         </div>
 

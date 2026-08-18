@@ -7,7 +7,8 @@ import {
   generateProductListing, 
   calculateSmartPricing, 
   generateArtisanStory, 
-  talkToCraftBridgeAssistant 
+  talkToCraftBridgeAssistant,
+  translateArtisanText
 } from './server/gemini.ts';
 import { Product, Artisan, Order } from './src/types.ts';
 
@@ -237,6 +238,18 @@ app.post('/api/ai/artisan-story', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Error generating artisan story:', err);
     res.status(500).json({ success: false, error: err.message || 'Failed to generate artisan story' });
+  }
+});
+
+// AI Service: Instant Text Translation (Artisan notes translation)
+app.post('/api/ai/translate-text', async (req: Request, res: Response) => {
+  try {
+    const { text, targetLanguage, sourceLanguage } = req.body;
+    const result = await translateArtisanText(text || '', targetLanguage || 'en', sourceLanguage);
+    res.json({ success: true, translatedText: result.translatedText });
+  } catch (err: any) {
+    console.error('Error translating text:', err);
+    res.status(500).json({ success: false, error: err.message || 'Failed to translate text', translatedText: req.body?.text || '' });
   }
 });
 

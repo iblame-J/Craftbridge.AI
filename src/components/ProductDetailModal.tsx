@@ -94,7 +94,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
               {product.verification?.isVerified && (
                 <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-emerald-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Craft Verified Lineage</span>
+                  <span>{t.craftVerified || 'Craft Verified Lineage'}</span>
                 </div>
               )}
             </div>
@@ -125,7 +125,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
                   className="w-12 h-12 rounded-xl object-cover border border-stone-300 shrink-0"
                 />
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-amber-800">Master Artisan</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-amber-800">{t.masterArtisan || 'Master Artisan'}</div>
                   <div className="font-bold text-sm sm:text-base text-stone-900">{artisan.name}</div>
                   <div className="text-xs text-stone-500 flex items-center gap-1 mt-0.5">
                     <MapPin className="w-3 h-3 text-stone-400" />
@@ -142,7 +142,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
                   }}
                   className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 text-stone-800 font-bold text-xs hover:bg-stone-100 transition shadow-2xs"
                 >
-                  Read Story
+                  {t.readStory || 'Read Story'}
                 </button>
                 <button
                   onClick={() => {
@@ -151,7 +151,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
                   }}
                   className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-900 font-bold text-xs hover:bg-emerald-100 transition"
                 >
-                  Verify Origin
+                  {t.verifyOrigin || 'Verify Origin'}
                 </button>
               </div>
             </div>
@@ -175,7 +175,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
                   }`}
                 >
                   {isVoiceSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                  <span>{isVoiceSpeaking ? t.stopListening : 'Read Aloud'}</span>
+                  <span>{isVoiceSpeaking ? t.stopListening : (t.listen || 'Read Aloud')}</span>
                 </button>
               </div>
 
@@ -214,7 +214,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
               {currentHighlights.length > 0 && (
                 <div className="mb-4 space-y-1">
                   <div className="text-[11px] font-bold text-stone-900 uppercase tracking-wider">
-                    Highlights:
+                    {t.highlights || 'Highlights'}:
                   </div>
                   {currentHighlights.map((hl, i) => (
                     <div key={i} className="flex items-center gap-1.5 text-xs font-medium text-stone-700">
@@ -232,7 +232,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
                   <span className="text-stone-800 font-semibold">{currentMaterials.join(', ')}</span>
                 </div>
                 <div>
-                  <span className="text-stone-400 block text-[10px] uppercase">Dimensions:</span>
+                  <span className="text-stone-400 block text-[10px] uppercase">{t.dimensions || 'Dimensions'}:</span>
                   <span className="text-stone-800 font-semibold">{product.dimensions || 'Handmade Standard'}</span>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export const ProductDetailModal: React.FC<ProductDetailProps> = ({ product, onCl
 
                 {/* Quantity Controls */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-stone-500">Qty:</span>
+                  <span className="text-xs font-bold text-stone-500">{t.quantity || 'Qty'}:</span>
                   <div className="flex items-center border border-stone-300 rounded-lg bg-white overflow-hidden text-xs">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}

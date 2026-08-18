@@ -87,13 +87,15 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
           tagline: data.story.suggestedTagline,
           translations: data.story.translations,
         });
+      } else {
+        throw new Error(data.error || 'Failed to generate story');
       }
     } catch (e) {
-      console.warn('Story generation error:', e);
+      console.warn('Story generation error, using fallback:', e);
       setGeneratedStory({
-        native: spokenText,
-        english: `Artisan ${currentArtisan.name} preserves authentic handmade heritage from ${currentArtisan.region}.`,
-        tagline: `Master Artisan from ${currentArtisan.region}`,
+        native: spokenText || `${currentArtisan.name} ಅವರು ಸಾಂಪ್ರದಾಯಿಕ ಕರಕುಶಲ ಕಲೆಯನ್ನು ಅಭ್ಯಾಸ ಮಾಡುತ್ತಾರೆ.`,
+        english: `Artisan ${currentArtisan.name} preserves authentic handmade heritage from ${currentArtisan.region}. "${spokenText || 'Creating handmade traditional crafts with generational pride.'}"`,
+        tagline: `Master ${currentArtisan.craftTypeName || 'Artisan'} from ${currentArtisan.region}`,
       });
     } finally {
       setIsGenerating(false);
@@ -143,7 +145,7 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
         {/* Spoken Input Section */}
         <div className="mb-5">
           <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
-            Speak or type your journey in your own words:
+            {t.shareYourJourney || 'Speak or type your journey in your own words:'}
           </label>
           
           <div className="relative">
@@ -176,12 +178,12 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
             {isGenerating ? (
               <>
                 <Sparkles className="w-4 h-4 animate-spin" />
-                <span>Crafting your authentic story with AI...</span>
+                <span>{t.loading || 'Crafting your authentic story with AI...'}</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Generate Story & Global English Translation</span>
+                <span>{t.generateStoryBtn || 'Generate Story & Global English Translation'}</span>
               </>
             )}
           </button>
@@ -198,7 +200,7 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
                     activeTab === 'native' ? 'bg-stone-900 text-white' : 'bg-white text-stone-700 border border-stone-200'
                   }`}
                 >
-                  Mother Tongue
+                  {t.motherTongueTab || 'Mother Tongue'}
                 </button>
                 <button
                   onClick={() => setActiveTab('english')}
@@ -206,7 +208,7 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
                     activeTab === 'english' ? 'bg-stone-900 text-white' : 'bg-white text-stone-700 border border-stone-200'
                   }`}
                 >
-                  English Translation
+                  {t.englishTranslationTab || 'English Translation'}
                 </button>
               </div>
 
@@ -218,7 +220,7 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-200 text-stone-800 font-bold text-xs hover:bg-stone-300 transition"
               >
                 {isVoiceSpeaking ? <VolumeX className="w-3.5 h-3.5 text-rose-600" /> : <Volume2 className="w-3.5 h-3.5" />}
-                <span>Listen</span>
+                <span>{isVoiceSpeaking ? t.stopListening : t.listen}</span>
               </button>
             </div>
 
@@ -239,13 +241,13 @@ export const ArtisanStoryModal: React.FC<StoryModalProps> = ({ onClose }) => {
             onClick={onClose}
             className="px-4 py-2.5 rounded-xl border border-stone-300 font-bold text-xs sm:text-sm text-stone-700 hover:bg-stone-100 transition"
           >
-            Cancel
+            {t.cancel || 'Cancel'}
           </button>
           <button
             onClick={handleSaveStory}
             className="px-6 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-xs transition"
           >
-            Save to Profile
+            {t.saveToProfile || 'Save to Profile'}
           </button>
         </div>
 

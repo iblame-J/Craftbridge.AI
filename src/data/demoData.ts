@@ -654,7 +654,7 @@ export const SAMPLE_CRAFT_PRESETS = [
     materials: ['Natural Split Bamboo', 'Wild Cane Tendrils'],
     estimatedHours: 5,
     materialCost: 300,
-    notes: 'ಕೈಯಿಂದ ಸೀಳಿದ ನೈಸರ್ಗಿಕ ಬಿದಿರಿನ ಹಣ್ಣಿನ ಬುಟ್ಟಿ. ಸುಲಭವಾಗಿ ಹಿಡಿಯಲು ಗಟ್ಟಿ ಹ್ಯಾಂಡಲ್ ಇದೆ. ಅಡುಗೆ ಮನೆಗೆ ತುಂಬಾ ಉಪಯುಕ್ತ.'
+    notes: 'Handcrafted natural split bamboo fruit basket with a sturdy curved handle. 100% eco-friendly and plastic-free for kitchen and dining storage.'
   },
   {
     category: 'pottery' as const,
@@ -663,7 +663,7 @@ export const SAMPLE_CRAFT_PRESETS = [
     materials: ['Riverbed Red Clay', 'Natural Wood Ash Glaze'],
     estimatedHours: 4,
     materialCost: 200,
-    notes: 'नदी की लाल मिट्टी से चाक पर बना प्राकृतिक मटका और कुल्हड़। पानी को प्राकृतिक रूप से ठंडा और मीठा रखता है।'
+    notes: 'Wheel-thrown terracotta red clay water pitcher with traditional matching cup. Naturally purifies and keeps drinking water cool.'
   },
   {
     category: 'textiles' as const,
@@ -672,7 +672,7 @@ export const SAMPLE_CRAFT_PRESETS = [
     materials: ['Organic Handspun Cotton', 'Natural Vegetable Dyes'],
     estimatedHours: 14,
     materialCost: 650,
-    notes: 'చేనేత మగ్గంపై నేసిన సహజ రంగుల ఇక్కత్ దుపట్టా. మృదువైన మరియు అందమైన అంచులు.'
+    notes: 'Handloom woven pure cotton ikat dupatta with traditional hand-tied fringe tassels. Colored with organic herbal dyes.'
   },
   {
     category: 'toys' as const,
@@ -681,6 +681,6 @@ export const SAMPLE_CRAFT_PRESETS = [
     materials: ['Soft Wood', 'Organic Tamarind Gum', 'Herbal Colors'],
     estimatedHours: 6,
     materialCost: 280,
-    notes: 'பாரம்பரிய மர பொம்மை, ஆடும் நடன மங்கை. குழந்தைகளுக்கு பாதுகாப்பான இயற்கை வண்ணங்கள்.'
+    notes: 'Hand-carved wooden dancing doll crafted from seasoned soft wood and finished with non-toxic, child-safe natural vegetable lacquer.'
   }
 ];

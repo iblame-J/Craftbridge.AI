@@ -113,7 +113,7 @@ export const CartAndCheckout: React.FC = () => {
         <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 text-left mb-8 space-y-3 shadow-xs">
           <div className="flex items-center gap-2 font-bold text-stone-900 text-sm">
             <Heart className="w-4 h-4 text-rose-600 fill-rose-600" />
-            <span>Direct Artisan Impact</span>
+            <span>{t.directArtisanImpact || 'Direct Artisan Impact'}</span>
           </div>
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
             100% of your product payment goes directly to the mastercraft artisan's rural banking account. Your parcel will include a signed Craft Authenticity Certificate with a verified QR code.
@@ -130,7 +130,7 @@ export const CartAndCheckout: React.FC = () => {
           }}
           className="px-6 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm shadow-xs transition"
         >
-          Continue Exploring Crafts
+          {t.continueExploring || 'Continue Exploring Crafts'}
         </button>
       </div>
     );
@@ -146,7 +146,7 @@ export const CartAndCheckout: React.FC = () => {
           className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 font-bold text-xs sm:text-sm hover:bg-stone-200 text-stone-800 transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Continue Shopping</span>
+          <span>{t.exploreCrafts || 'Continue Shopping'}</span>
         </button>
 
         <button
@@ -158,7 +158,7 @@ export const CartAndCheckout: React.FC = () => {
           className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 text-stone-800 font-bold text-xs sm:text-sm hover:bg-stone-200 transition"
         >
           {isVoiceSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          <span>{isVoiceSpeaking ? t.stopListening : 'Read Cart Summary'}</span>
+          <span>{isVoiceSpeaking ? t.stopListening : (t.listen || 'Read Cart Summary')}</span>
         </button>
       </div>
 
@@ -177,13 +177,13 @@ export const CartAndCheckout: React.FC = () => {
           <div className="w-14 h-14 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-3 text-stone-400">
             <ShoppingCart className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-stone-800">Your basket is currently empty</h3>
-          <p className="text-xs text-stone-500 mt-1 mb-6">Discover authentic handmade crafts from verified rural artisans.</p>
+          <h3 className="text-base font-bold text-stone-800">{t.emptyCart || 'Your basket is currently empty'}</h3>
+          <p className="text-xs text-stone-500 mt-1 mb-6">{t.discoverMoreCrafts || 'Discover authentic handmade crafts from verified rural artisans.'}</p>
           <button
             onClick={() => setActiveView('buyer-marketplace')}
             className="px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold text-xs sm:text-sm shadow-xs hover:bg-stone-800 transition"
           >
-            Explore Marketplace
+            {t.exploreMarketplace || 'Explore Marketplace'}
           </button>
         </div>
       ) : (
@@ -237,7 +237,7 @@ export const CartAndCheckout: React.FC = () => {
           {/* Right: Checkout & Address Summary */}
           <div className="bg-white rounded-2xl p-6 border border-stone-200 shadow-xs h-fit">
             <h2 className="font-bold text-base text-stone-900 mb-4 pb-3 border-b border-stone-100">
-              Shipping & Order Summary
+              {t.shippingAddress || 'Shipping & Order Summary'}
             </h2>
 
             <form onSubmit={handlePlaceOrder} className="space-y-3.5 text-xs font-bold">
@@ -289,13 +289,13 @@ export const CartAndCheckout: React.FC = () => {
               {/* Price Calculation */}
               <div className="pt-3 border-t border-stone-100 space-y-2 text-xs font-semibold text-stone-600">
                 <div className="flex justify-between">
-                  <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items):</span>
+                  <span>{t.subtotal || 'Subtotal'} ({cart.reduce((s, i) => s + i.quantity, 0)} items):</span>
                   <span className="font-bold text-stone-900">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Eco-Packaging & Shipping:</span>
+                  <span>{t.shipping || 'Eco-Packaging & Shipping'}:</span>
                   <span className="font-bold text-stone-900">
-                    {shippingFee === 0 ? <span className="text-emerald-700 font-bold">FREE</span> : formatPrice(shippingFee)}
+                    {shippingFee === 0 ? <span className="text-emerald-700 font-bold">{t.freeShipping || 'FREE'}</span> : formatPrice(shippingFee)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2.5 border-t border-stone-200 text-sm font-extrabold text-stone-950">
@@ -310,7 +310,7 @@ export const CartAndCheckout: React.FC = () => {
                 disabled={isOrdering}
                 className="w-full mt-4 py-3 rounded-xl bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white font-bold text-xs sm:text-sm transition shadow-xs active:scale-98"
               >
-                {isOrdering ? 'Confirming with Artisan...' : 'Complete Order & Pay Artisan'}
+                {isOrdering ? 'Confirming with Artisan...' : (t.checkout || 'Complete Order & Pay Artisan')}
               </button>
             </form>
           </div>

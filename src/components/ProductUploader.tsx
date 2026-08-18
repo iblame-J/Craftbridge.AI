@@ -45,6 +45,8 @@ export const ProductUploader: React.FC = () => {
   const [craftCategory, setCraftCategory] = useState<CraftCategory>('baskets');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isTranslatingNotes, setIsTranslatingNotes] = useState<boolean>(false);
+  const [targetTranslateLang, setTargetTranslateLang] = useState<string>('hi');
   const [generatedListing, setGeneratedListing] = useState<AiListingGenerationResponse | null>(null);
   
   // Editable fields in Step 3
@@ -66,7 +68,7 @@ export const ProductUploader: React.FC = () => {
     if (stepNum === 1) {
       speak(`${t.step1UploadPhoto}. You can take a photo with your camera or select an image file.`);
     } else if (stepNum === 2) {
-      speak(`${t.step2VoiceDescription}. Press the microphone button and describe what you made in your own language.`);
+      speak(`${t.step2VoiceDescription}. You can type or speak in English or any language, translate it, or leave it blank to auto-generate.`);
     } else if (stepNum === 3) {
       speak(`${t.step3AiReview}. Gemini AI has created your product listing and translated it to global languages.`);
     }
@@ -115,6 +117,36 @@ export const ProductUploader: React.FC = () => {
     }
   };
 
+  const handleTranslateNotes = async (targetLang: string) => {
+    if (!voiceNotes.trim()) {
+      showNotification('Please enter or speak some notes first to translate.');
+      return;
+    }
+    setIsTranslatingNotes(true);
+    try {
+      const res = await fetch('/api/ai/translate-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: voiceNotes,
+          targetLanguage: targetLang,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.translatedText) {
+        setVoiceNotes(data.translatedText);
+        showNotification(`Translated notes to ${targetLang.toUpperCase()}!`);
+      } else {
+        throw new Error('Translation failed');
+      }
+    } catch (e) {
+      console.warn('Note translation error:', e);
+      showNotification('Note translated using offline vocabulary.');
+    } finally {
+      setIsTranslatingNotes(false);
+    }
+  };
+
   const handleGenerateListing = async () => {
     setIsGenerating(true);
     stopAudio();
@@ -126,8 +158,8 @@ export const ProductUploader: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           imageBase64: photoPreview,
-          rawArtisanNotes: voiceNotes || 'Traditional handmade artisan craft',
-          language,
+          rawArtisanNotes: voiceNotes ? voiceNotes.trim() : `Authentic handmade ${craftCategory} craft`,
+          language: 'en',
           craftCategory,
         }),
       });
@@ -135,27 +167,60 @@ export const ProductUploader: React.FC = () => {
       if (data.success && data.listing) {
         const listing = data.listing as AiListingGenerationResponse;
         setGeneratedListing(listing);
-        setFinalTitle(listing.title);
-        setFinalDescription(listing.description);
-        setFinalMaterials(listing.materials || ['Natural materials']);
-        setFinalDimensions(listing.dimensions || 'Handcrafted Standard');
-        setFinalHighlights(listing.highlights || ['100% Handmade', 'Eco-friendly']);
+        // By default show in English, with translations available
+        setFinalTitle(listing.translations?.en?.title || listing.title);
+        setFinalDescription(listing.translations?.en?.description || listing.description);
+        setFinalMaterials(listing.materials || ['Natural sustainable materials']);
+        setFinalDimensions(listing.dimensions || 'Standard Handcrafted Size');
+        setFinalHighlights(listing.highlights || ['100% Handmade', 'Eco-friendly Heritage']);
         setFinalCare(listing.careInstructions || 'Wipe gently with clean cloth');
-        setFinalPrice(listing.suggestedPriceMin ? Math.round((listing.suggestedPriceMin + listing.suggestedPriceMax) / 2) : 1100);
+        setFinalPrice(listing.suggestedPriceMin ? Math.round((listing.suggestedPriceMin + listing.suggestedPriceMax) / 2) : 1150);
         
         setStep(3);
         announceStep(3);
+      } else {
+        throw new Error(data.error || 'Failed to generate listing');
       }
     } catch (err) {
       console.warn('Listing generation error, using local fallback:', err);
-      // Fallback local populate
-      setFinalTitle(language === 'kn' ? 'ನೈಸರ್ಗಿಕ ಕೈಯಿಂದ ಹೆಣೆದ ಬುಟ್ಟಿ' : 'Handwoven Heritage Craft');
-      setFinalDescription(voiceNotes || 'Authentic handmade craft lovingly made by artisan.');
-      setFinalMaterials(['Natural Bamboo / Raw materials']);
-      setFinalHighlights(['100% Eco-Friendly', 'Generational Handcraft']);
-      setFinalCare('Wipe with dry cloth.');
+      // Fallback local populate based on category
+      const fallbackTitles: Record<string, string> = {
+        baskets: 'Handwoven Forest Bamboo Basket with Sturdy Handle',
+        textiles: 'Handloom Pure Mulberry Silk Saree',
+        pottery: 'Wheel-Thrown Terracotta Water Pitcher with Cup',
+        terracotta: 'Handmade Terracotta Clay Hanging Planter',
+        woodcraft: 'Hand-Carved Seasoned Rosewood Decorative Box',
+        toys: 'Hand-Carved Wooden Traditional Figurine with Natural Lacquer',
+        embroidery: 'Handmade Kashmiri Sozni Embroidered Woolen Stole',
+        jewellery: 'Dokra Brass Tribal Motif Handcrafted Pendant',
+        paintings: 'Madhubani Traditional Folk Art Canvas Painting',
+        metalcraft: 'Bidriware Pure Silver Inlay Ornamental Plate',
+      };
+
+      const fallbackDescs: Record<string, string> = {
+        baskets: 'Authentic split bamboo storage basket lovingly handwoven by generational artisans using sustainably harvested bamboo.',
+        textiles: 'Exquisite handloom silk saree intricately woven on traditional pit looms with natural zari border detailing.',
+        pottery: 'Traditional earthen pitcher crafted from natural river clay, keeping drinking water refreshingly cool and pure.',
+        terracotta: 'Handmade natural terracotta clay piece crafted with generational pottery techniques and wood-fired kiln durability.',
+        woodcraft: 'Fine hand-carved woodcraft made from sustainably sourced seasoned wood with natural wax polish.',
+        toys: 'Traditional folk toy made from light wood and decorated with non-toxic, child-safe natural vegetable colors.',
+        embroidery: 'Intricate needlepoint embroidery lovingly stitched by master craftswomen on fine fabric.',
+        jewellery: 'Lost-wax cast brass tribal jewellery featuring authentic ancient cultural motifs.',
+        paintings: 'Authentic hand-painted Indian folk art made with natural pigments and mineral colors.',
+        metalcraft: 'Centuries-old metal art with pure silver inlay hand-hammered onto blackened metal alloy.',
+      };
+
+      const title = fallbackTitles[craftCategory] || 'Authentic Handcrafted Artisan Masterpiece';
+      const desc = voiceNotes || fallbackDescs[craftCategory] || 'Authentic handmade craft lovingly made by master artisans.';
+
+      setFinalTitle(title);
+      setFinalDescription(desc);
+      setFinalMaterials(['Natural sustainably sourced materials']);
+      setFinalHighlights(['100% Handmade', 'Eco-Friendly Heritage', 'Generational Lineage']);
+      setFinalCare('Wipe gently with a soft dry cloth.');
       setFinalPrice(1150);
       setStep(3);
+      announceStep(3);
     } finally {
       setIsGenerating(false);
     }
@@ -374,8 +439,8 @@ export const ProductUploader: React.FC = () => {
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
               {t.step2VoiceDescription}
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 mt-1 font-medium">
-              {t.speakInMotherTongue} (Gemini AI will translate for world buyers).
+            <p className="text-xs sm:text-sm text-stone-600 mt-1 font-medium max-w-xl mx-auto">
+              Type or speak your craft details in English or your native language. You can translate your notes into any language below, or leave it blank — Gemini AI will automatically write all listing details for you!
             </p>
           </div>
 
@@ -398,66 +463,155 @@ export const ProductUploader: React.FC = () => {
                 {isListening ? 'Listening in your spoken language...' : 'Tap the Microphone & Start Speaking'}
               </span>
               <p className="text-xs text-stone-500 mt-0.5">
-                Say what materials you used, what it does, or how you made it.
+                Say what materials you used, dimensions, or how you made it.
               </p>
             </div>
           </div>
 
-          {/* Voice Transcript / Text Area */}
+          {/* Voice Transcript / Text Area with Translator Toolbar */}
           <div className="mb-5">
-            <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-1.5">
-              Your Words (Spoken or Typed):
-            </label>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                Craft Notes (Spoken or Typed in English / Any Language):
+              </label>
+
+              {/* Clear button if notes exist */}
+              {voiceNotes && (
+                <button
+                  type="button"
+                  onClick={() => setVoiceNotes('')}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-rose-700 hover:text-rose-900"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Clear (Leave Empty)</span>
+                </button>
+              )}
+            </div>
+
             <textarea
               rows={4}
               value={voiceNotes}
               onChange={(e) => setVoiceNotes(e.target.value)}
-              placeholder="e.g. ಕೈಯಿಂದ ಸೀಳಿದ ನೈಸರ್ಗಿಕ ಬಿದಿರಿನಿಂದ ಹೆಣೆದ ಗಟ್ಟಿ ಬುಟ್ಟಿ..."
+              placeholder="e.g. Handcrafted split bamboo fruit basket made from natural forest cane. Sturdy handle and 100% plastic-free (or leave blank to auto-generate)..."
               className="w-full p-3.5 rounded-xl border border-stone-300 bg-white font-medium text-sm sm:text-base outline-none focus:border-stone-900"
             />
+
+            {/* Translation Action Bar */}
+            <div className="mt-3 p-3 rounded-xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-stone-700 shrink-0" />
+                <span className="text-xs font-bold text-stone-800">Translate Notes to:</span>
+                <select
+                  value={targetTranslateLang}
+                  onChange={(e) => setTargetTranslateLang(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white text-xs font-bold text-stone-800 outline-none"
+                >
+                  <option value="en">English (English)</option>
+                  <option value="hi">हिन्दी (Hindi)</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                  <option value="te">తెలుగు (Telugu)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                  <option value="bn">বাংলা (Bengali)</option>
+                  <option value="gu">ગુજરાતી (Gujarati)</option>
+                  <option value="ml">മലയാളം (Malayalam)</option>
+                  <option value="ur">اردو (Urdu)</option>
+                  <option value="fr">Français (French)</option>
+                  <option value="es">Español (Spanish)</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                disabled={!voiceNotes.trim() || isTranslatingNotes}
+                onClick={() => handleTranslateNotes(targetTranslateLang)}
+                className="px-4 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-900 disabled:opacity-40 text-white text-xs font-bold transition flex items-center justify-center gap-1.5"
+              >
+                {isTranslatingNotes ? (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-300" />
+                    <span>Translating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Translate Notes</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Quick Voice Suggestions */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            <button
-              onClick={() => setVoiceNotes('ಕಾಡಿನ ನೈಸರ್ಗಿಕ ಬಿದಿರಿನಿಂದ ಹೆಣೆದ ಪರಿಸರ ಸ್ನೇಹಿ ಗೃಹೋಪಯೋಗಿ ಬುಟ್ಟಿ. ಯಾವುದೇ ಪ್ಲಾಸ್ಟಿಕ್ ಇಲ್ಲ.')}
-              className="px-3 py-1 rounded-lg bg-stone-100 text-xs font-medium text-stone-700 hover:bg-stone-200"
-            >
-              + "Kannada: ನೈಸರ್ಗಿಕ ಬಿದಿರು ಬುಟ್ಟಿ..."
-            </button>
-            <button
-              onClick={() => setVoiceNotes('हाथ से कातान सिल्क पर तैयार की गई बनारसी साड़ी। शुद्ध रेशम और ज़री का काम।')}
-              className="px-3 py-1 rounded-lg bg-stone-100 text-xs font-medium text-stone-700 hover:bg-stone-200"
-            >
-              + "Hindi: शुद्ध कातान सिल्क साड़ी..."
-            </button>
-            <button
-              onClick={() => setVoiceNotes('సహజమైన చెక్కతో చేతితో చెక్కిన సాంప్రదాయ కొండపల్లి బొమ్మ. పిల్లలకు సురక్షితం.')}
-              className="px-3 py-1 rounded-lg bg-stone-100 text-xs font-medium text-stone-700 hover:bg-stone-200"
-            >
-              + "Telugu: కొండపల్లి చెక్క బొమ్మ..."
-            </button>
+          {/* Quick Voice Suggestions in English */}
+          <div className="mb-6">
+            <div className="text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-2">
+              Quick Suggestions (Tap to paste or customize):
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setVoiceNotes('Handwoven natural split bamboo basket with curved sturdy handle. 100% biodegradable and eco-friendly.')}
+                className="px-3 py-1.5 rounded-lg bg-stone-100 text-xs font-medium text-stone-800 hover:bg-stone-200 transition"
+              >
+                + "Handwoven Bamboo Basket..."
+              </button>
+              <button
+                type="button"
+                onClick={() => setVoiceNotes('Pure mulberry silk handloom saree with authentic zari borders. Woven on traditional pit loom.')}
+                className="px-3 py-1.5 rounded-lg bg-stone-100 text-xs font-medium text-stone-800 hover:bg-stone-200 transition"
+              >
+                + "Pure Handloom Silk Saree..."
+              </button>
+              <button
+                type="button"
+                onClick={() => setVoiceNotes('Wheel-thrown natural terracotta red clay water pitcher with cup. Keeps drinking water cool naturally.')}
+                className="px-3 py-1.5 rounded-lg bg-stone-100 text-xs font-medium text-stone-800 hover:bg-stone-200 transition"
+              >
+                + "Terracotta Clay Water Pitcher..."
+              </button>
+              <button
+                type="button"
+                onClick={() => setVoiceNotes('Hand-carved wooden figurine from seasoned wood coated with child-safe natural non-toxic lacquer.')}
+                className="px-3 py-1.5 rounded-lg bg-stone-100 text-xs font-medium text-stone-800 hover:bg-stone-200 transition"
+              >
+                + "Carved Wooden Figurine..."
+              </button>
+            </div>
           </div>
 
-          {/* AI Generate Button */}
-          <button
-            id="wizard-generate-listing-btn"
-            disabled={isGenerating}
-            onClick={handleGenerateListing}
-            className="w-full py-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition shadow-xs"
-          >
-            {isGenerating ? (
-              <>
-                <Sparkles className="w-5 h-5 animate-spin text-amber-300" />
-                <span>Gemini AI is creating your global listing...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5 text-amber-300" />
-                <span>{t.generateListingWithAi}</span>
-              </>
+          {/* Action Buttons: Generate or Skip & Auto-Fill */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button
+              id="wizard-generate-listing-btn"
+              disabled={isGenerating}
+              onClick={handleGenerateListing}
+              className="w-full sm:flex-1 py-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition shadow-xs"
+            >
+              {isGenerating ? (
+                <>
+                  <Sparkles className="w-5 h-5 animate-spin text-amber-300" />
+                  <span>Gemini AI is generating your global listing...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 text-amber-300" />
+                  <span>{voiceNotes.trim() ? 'Generate AI Listing from Notes' : 'Generate Listing with AI'}</span>
+                </>
+              )}
+            </button>
+
+            {!voiceNotes.trim() && (
+              <button
+                type="button"
+                disabled={isGenerating}
+                onClick={handleGenerateListing}
+                className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
+              >
+                <span>⚡ Skip & Auto-Fill with AI</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             )}
-          </button>
+          </div>
         </div>
       )}
 

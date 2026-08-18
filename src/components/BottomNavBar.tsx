@@ -19,7 +19,8 @@ export const BottomNavBar: React.FC = () => {
     setActiveView,
     cart,
     setIsVoiceAssistantOpen,
-    accessibility
+    accessibility,
+    t
   } = useApp();
 
   return (
@@ -43,7 +44,7 @@ export const BottomNavBar: React.FC = () => {
           }`}
         >
           <Home className="w-5 h-5 mb-0.5" />
-          <span>Home</span>
+          <span>{t.home || 'Home'}</span>
         </button>
 
         {/* Shop Crafts */}
@@ -56,7 +57,7 @@ export const BottomNavBar: React.FC = () => {
           }`}
         >
           <ShoppingBag className="w-5 h-5 mb-0.5" />
-          <span>Market</span>
+          <span>{t.marketplace || 'Market'}</span>
         </button>
 
         {/* Voice AI Assistant button */}
@@ -65,7 +66,7 @@ export const BottomNavBar: React.FC = () => {
           className="flex flex-col items-center -mt-3 p-2.5 rounded-full bg-stone-900 text-white shadow-md active:scale-95 transition"
         >
           <Bot className="w-5 h-5 text-amber-300" />
-          <span className="text-[9px] font-bold mt-0.5">Voice</span>
+          <span className="text-[9px] font-bold mt-0.5">{t.voiceAssistant || 'Voice'}</span>
         </button>
 
         {/* Add Craft / Sell */}
@@ -78,7 +79,7 @@ export const BottomNavBar: React.FC = () => {
           }`}
         >
           <PlusCircle className="w-5 h-5 mb-0.5" />
-          <span>List Craft</span>
+          <span>{t.listCraft || 'List Craft'}</span>
         </button>
 
         {/* Cart */}
@@ -89,9 +90,9 @@ export const BottomNavBar: React.FC = () => {
           }`}
         >
           <ShoppingCart className="w-5 h-5 mb-0.5" />
-          <span>Cart</span>
+          <span>{t.myCart || 'Cart'}</span>
           {cart.length > 0 && (
-            <span className="absolute 0 right-1 w-4 h-4 rounded-full bg-amber-800 text-white text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0 right-1 w-4 h-4 rounded-full bg-amber-800 text-white text-[9px] font-bold flex items-center justify-center">
               {cart.reduce((a, b) => a + b.quantity, 0)}
             </span>
           )}
@@ -101,3 +102,4 @@ export const BottomNavBar: React.FC = () => {
     </div>
   );
 };
+

@@ -167,7 +167,7 @@ export const BuyerMarketplace: React.FC = () => {
               onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 hover:text-stone-700"
             >
-              Clear
+              {t.clear || 'Clear'}
             </button>
           )}
         </div>
@@ -240,8 +240,8 @@ export const BuyerMarketplace: React.FC = () => {
       {filteredProducts.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-2xl border border-stone-200">
           <Search className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-stone-700">No crafts found</h3>
-          <p className="text-xs text-stone-500 mt-1">Try changing your category filter or search keywords.</p>
+          <h3 className="text-base font-bold text-stone-700">{t.noCraftsFound || 'No crafts found'}</h3>
+          <p className="text-xs text-stone-500 mt-1">{t.discoverMoreCrafts || 'Try changing your category filter or search keywords.'}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
